@@ -2,8 +2,8 @@ package com.david.hlp.SpringBootWork.demo.controller;
 
 import com.david.hlp.SpringBootWork.demo.service.DraggableTableService;
 import com.david.hlp.SpringBootWork.demo.util.DraggableTableResult;
-import com.david.hlp.SpringBootWork.system.auth.config.BaseController;
-import com.david.hlp.SpringBootWork.system.auth.entity.Result;
+import com.david.hlp.SpringBootWork.system.auth.BaseController;
+import com.david.hlp.SpringBootWork.system.entity.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

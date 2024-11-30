@@ -1,6 +1,6 @@
 package com.david.hlp.SpringBootWork.system.auditing;
 
-import com.david.hlp.SpringBootWork.system.auth.entity.User;
+import com.david.hlp.SpringBootWork.system.entity.User;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

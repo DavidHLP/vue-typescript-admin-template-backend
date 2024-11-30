@@ -1,8 +1,8 @@
 package com.david.hlp.SpringBootWork.runner;
 
-import com.david.hlp.SpringBootWork.system.auth.Repository.RoleRepository;
-import com.david.hlp.SpringBootWork.system.auth.Repository.UserRepository;
-import com.david.hlp.SpringBootWork.system.auth.entity.User;
+import com.david.hlp.SpringBootWork.system.Repository.RoleRepository;
+import com.david.hlp.SpringBootWork.system.Repository.UserRepository;
+import com.david.hlp.SpringBootWork.system.entity.User;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.DependsOn;

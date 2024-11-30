@@ -1,16 +1,16 @@
 package com.david.hlp.SpringBootWork.runner;
 
-import com.david.hlp.SpringBootWork.system.auth.Repository.PermissionRepository;
-import com.david.hlp.SpringBootWork.system.auth.Repository.RolePermissionRepository;
-import com.david.hlp.SpringBootWork.system.auth.Repository.RoleRepository;
-import com.david.hlp.SpringBootWork.system.auth.entity.Permission;
-import com.david.hlp.SpringBootWork.system.auth.enumentity.DefaultRole;
-import com.david.hlp.SpringBootWork.system.auth.enumentity.DefaultRolePermission;
+import com.david.hlp.SpringBootWork.system.Repository.PermissionRepository;
+import com.david.hlp.SpringBootWork.system.Repository.RolePermissionRepository;
+import com.david.hlp.SpringBootWork.system.Repository.RoleRepository;
+import com.david.hlp.SpringBootWork.system.entity.Permission;
+import com.david.hlp.SpringBootWork.system.enumentity.DefaultRole;
+import com.david.hlp.SpringBootWork.system.enumentity.DefaultRolePermission;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
-import com.david.hlp.SpringBootWork.system.auth.entity.Role;
+import com.david.hlp.SpringBootWork.system.entity.Role;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,8 +1,8 @@
 package com.david.hlp.SpringBootWork.runner;
 
-import com.david.hlp.SpringBootWork.system.auth.Repository.PermissionRepository;
-import com.david.hlp.SpringBootWork.system.auth.entity.Permission;
-import com.david.hlp.SpringBootWork.system.auth.enumentity.DefaultRolePermission;
+import com.david.hlp.SpringBootWork.system.Repository.PermissionRepository;
+import com.david.hlp.SpringBootWork.system.entity.Permission;
+import com.david.hlp.SpringBootWork.system.enumentity.DefaultRolePermission;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

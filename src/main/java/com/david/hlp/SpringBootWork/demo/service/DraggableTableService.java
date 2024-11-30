@@ -39,6 +39,7 @@ public class DraggableTableService {
 
             draggableTables.forEach(table -> {
                 table.setId(null);
+                table.setIscreate(false);
             });
 
             draggableTableRepository.saveAll(draggableTables);

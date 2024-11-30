@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.david.hlp.SpringBootWork.system.auth.mapper.UserMapper">
+<mapper namespace="com.david.hlp.SpringBootWork.system.mapper.UserMapper">
 
     <!-- 查询用户及其角色和权限 -->
     <select id="getUserByUsername" parameterType="string" resultMap="UserResultMap">
@@ -22,20 +22,18 @@
     </select>
 
     <!-- 用户结果映射 -->
-    <resultMap id="UserResultMap" type="com.david.hlp.SpringBootWork.system.auth.entity.UserInfo">
-        <!-- 映射 UserInfo 的基本字段 -->
+    <resultMap id="UserResultMap" type="com.david.hlp.SpringBootWork.system.entity.UserInfo">
+
         <result property="name" column="name" />
         <result property="email" column="email" />
         <result property="avatar" column="avatar"/>
         <result property="introduction" column="introduction"/>
 
-        <!-- 映射 Role 对象 -->
-        <association property="roles" javaType="com.david.hlp.SpringBootWork.system.auth.entity.Role">
+        <association property="roles" javaType="com.david.hlp.SpringBootWork.system.entity.Role">
             <id property="id" column="role_id" />
             <result property="roleName" column="role_name" />
 
-            <!-- 映射 Role 中的 List<Permission> -->
-            <collection property="permissions" ofType="com.david.hlp.SpringBootWork.system.auth.entity.Permission">
+            <collection property="permissions" ofType="com.david.hlp.SpringBootWork.system.entity.Permission">
                 <id property="id" column="permission_id" />
                 <result property="permission" column="permission_name" />
             </collection>

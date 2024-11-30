@@ -1,14 +1,11 @@
 package com.david.hlp.SpringBootWork.demo.controller;
 
 import com.david.hlp.SpringBootWork.demo.entity.ArticleWrapper;
-import com.david.hlp.SpringBootWork.demo.entity.DraggableTable;
 import com.david.hlp.SpringBootWork.demo.service.DraggableTableService;
 import com.david.hlp.SpringBootWork.demo.util.DraggableTableResult;
-import com.david.hlp.SpringBootWork.system.auth.entity.Result;
+import com.david.hlp.SpringBootWork.system.entity.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/articles")
@@ -38,8 +35,9 @@ public class DraggableTableController {
     }
 
     @PostMapping
-    public Result<DraggableTable> createArticle(@RequestBody DraggableTable article) {
-        return Result.ok(draggableTableService.createArticle(article));
+    public Result<ArticleWrapper> createArticle(@RequestBody ArticleWrapper articleWrapper) {
+        articleWrapper.getArticle().setId(null);
+        return Result.ok(ArticleWrapper.builder().article(draggableTableService.createArticle(articleWrapper.getArticle())).build());
     }
 
     @PutMapping("/{id}")

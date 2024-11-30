@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: local
   application:
     name: SpringBootWork
   datasource:
@@ -13,6 +15,17 @@ spring:
       connection-timeout: 30000 # 连接超时时间（毫秒）
       idle-timeout: 600000      # 空闲连接存活时间（毫秒）
       max-lifetime: 1800000     # 最大连接存活时间（毫秒）
+  mail:
+    outTime: 15
+    host: smtp.163.com # 你邮箱的smtp地址
+    username: xxxxxxx.com # 申请了smtp的邮箱
+    password: xxxxxxx # SMTP服务的秘钥
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
   jpa:
     hibernate:

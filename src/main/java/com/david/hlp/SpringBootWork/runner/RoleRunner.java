@@ -1,10 +1,9 @@
 package com.david.hlp.SpringBootWork.runner;
 
-import com.david.hlp.SpringBootWork.system.auth.Repository.RoleRepository;
-import com.david.hlp.SpringBootWork.system.auth.entity.Role;
+import com.david.hlp.SpringBootWork.system.Repository.RoleRepository;
+import com.david.hlp.SpringBootWork.system.entity.Role;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 @Service
