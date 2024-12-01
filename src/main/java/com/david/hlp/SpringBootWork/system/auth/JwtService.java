@@ -23,7 +23,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-  // 从配置文件中加载秘钥
+  // 从配置文件中加载秘钥（Base64 编码格式）
   @Value("${application.security.jwt.secret-key}")
   private String secretKey;
 
@@ -42,7 +42,7 @@ public class JwtService {
    * @return 提取到的用户名。
    */
   public String extractUsername(String token) {
-    return extractClaim(token, Claims::getSubject); // 提取主题（即用户名）
+    return extractClaim(token, Claims::getSubject); // 提取 "subject" 声明，通常是用户名
   }
 
   /**
@@ -54,8 +54,8 @@ public class JwtService {
    * @return 提取到的声明信息。
    */
   public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-    final Claims claims = extractAllClaims(token); // 获取所有声明
-    return claimsResolver.apply(claims); // 通过解析函数获取目标声明
+    final Claims claims = extractAllClaims(token); // 获取令牌中的所有声明
+    return claimsResolver.apply(claims); // 通过解析函数获取指定的声明
   }
 
   /**
@@ -65,7 +65,7 @@ public class JwtService {
    * @return 生成的 JWT 令牌。
    */
   public String generateToken(UserDetails userDetails) {
-    return generateToken(new HashMap<>(), userDetails); // 无额外声明，使用空的 Map
+    return generateToken(new HashMap<>(), userDetails); // 使用空的 Map 表示无额外声明
   }
 
   /**
@@ -79,7 +79,7 @@ public class JwtService {
           Map<String, Object> extraClaims,
           UserDetails userDetails
   ) {
-    return buildToken(extraClaims, userDetails, jwtExpiration); // 使用默认的 JWT 有效期
+    return buildToken(extraClaims, userDetails, jwtExpiration); // 使用配置中的默认有效期
   }
 
   /**
@@ -97,7 +97,7 @@ public class JwtService {
    *
    * @param extraClaims 额外声明。
    * @param userDetails 用户详细信息。
-   * @param expiration  令牌的有效期。
+   * @param expiration  令牌的有效期（单位：毫秒）。
    * @return 生成的 JWT 令牌。
    */
   private String buildToken(
@@ -108,11 +108,11 @@ public class JwtService {
     return Jwts
             .builder()
             .setClaims(extraClaims) // 设置额外声明
-            .setSubject(userDetails.getUsername()) // 设置主题（用户名）
+            .setSubject(userDetails.getUsername()) // 设置主题，通常为用户名
             .setIssuedAt(new Date(System.currentTimeMillis())) // 设置签发时间
             .setExpiration(new Date(System.currentTimeMillis() + expiration)) // 设置过期时间
-            .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 使用秘钥签名
-            .compact(); // 构建并返回令牌
+            .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 使用 HMAC-SHA256 签名
+            .compact(); // 构建并返回 JWT
   }
 
   /**
@@ -123,7 +123,7 @@ public class JwtService {
    * @return 如果令牌有效且未过期，则返回 true。
    */
   public boolean isTokenValid(String token, UserDetails userDetails) {
-    final String username = extractUsername(token); // 提取令牌中的用户名
+    final String username = extractUsername(token); // 提取用户名
     return (username.equals(userDetails.getUsername())) && !isTokenExpired(token); // 验证用户名一致性和过期状态
   }
 
@@ -169,6 +169,6 @@ public class JwtService {
    */
   private Key getSignInKey() {
     byte[] keyBytes = Decoders.BASE64.decode(secretKey); // 使用 Base64 解码秘钥
-    return Keys.hmacShaKeyFor(keyBytes); // 使用 HMAC-SHA 密钥生成器创建 Key 对象
+    return Keys.hmacShaKeyFor(keyBytes); // 使用 HMAC-SHA 算法生成秘钥对象
   }
 }

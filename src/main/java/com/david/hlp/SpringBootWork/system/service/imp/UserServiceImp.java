@@ -20,8 +20,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 用户服务类，处理与用户相关的业务逻辑。
- * 提供更改密码的功能。
+ * 用户服务类。
+ * <p>
+ * 负责处理与用户相关的业务逻辑，包括更改密码、获取用户权限和用户信息等。
  */
 @Service
 @RequiredArgsConstructor // 自动生成构造函数，注入必要的依赖
@@ -37,18 +38,27 @@ public class UserServiceImp {
      */
     private final UserRepository repository;
 
+    /**
+     * 用户数据映射层，用于执行用户相关的数据库查询。
+     */
     private final UserMapper userMapper;
 
+    /**
+     * 角色数据映射层，用于执行角色相关的数据库查询。
+     */
     private final RoleMapper roleMapper;
 
     /**
      * 更改用户密码的方法。
+     * <p>
+     * 验证当前密码的正确性，并检查新密码和确认密码的一致性。
+     * <p>
+     * 然后将加密的新密码更新到数据库。
      *
      * @param request 包含用户当前密码、新密码和确认密码的请求数据。
      * @param connectedUser 当前已认证的用户信息，由 Spring Security 提供的 Principal 对象表示。
      */
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
-
         // 从 Principal 中获取当前用户对象
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
@@ -69,20 +79,31 @@ public class UserServiceImp {
         repository.save(user);
     }
 
+    /**
+     * 获取用户的权限信息。
+     * <p>
+     * 根据用户名查询角色和权限列表，并构建 Spring Security 的权限集合。
+     *
+     * @param username 用户名。
+     * @return 包含角色和权限的列表，格式为 Spring Security 的 SimpleGrantedAuthority。
+     */
     public List<SimpleGrantedAuthority> getAuthorities(String username) {
+        // 根据用户名获取角色 ID
         Long roleId = userMapper.getRoleIdByUsername(username);
 
+        // 根据角色 ID 获取角色信息
         Role role = roleMapper.selectByRoleId(roleId);
 
+        // 获取角色的权限列表
         List<Permission> permissions = role.getPermissions();
         String roleName = role.getRoleName();
 
-        // 判空处理
+        // 判空处理：如果权限列表为空，则仅添加角色标识
         if (permissions == null || permissions.isEmpty()) {
             return List.of(new SimpleGrantedAuthority("ROLE_" + roleName));
         }
 
-        // 转换权限列表
+        // 转换权限列表为 SimpleGrantedAuthority
         List<SimpleGrantedAuthority> authorities = permissions.stream()
                 .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
                 .collect(Collectors.toList());
@@ -92,12 +113,28 @@ public class UserServiceImp {
         return authorities;
     }
 
-
+    /**
+     * 获取用户的详细信息。
+     * <p>
+     * 根据用户名查询数据库，返回用户信息。
+     *
+     * @param username 用户名。
+     * @return 返回包含用户详细信息的 UserInfo 对象。
+     */
     public UserInfo getUser(String username) {
         return userMapper.getUserByUsername(username);
     }
 
+    /**
+     * 获取符合条件的用户列表。
+     * <p>
+     * 根据用户名模糊查询，返回分页结果。
+     *
+     * @param name 用户名关键字，用于模糊查询。
+     * @return 包含用户信息列表的分页结果 ResponsePage。
+     */
     public ResponsePage<UserInfo> getUsers(String name) {
+        // 查询符合条件的用户列表，并构建分页结果
         return ResponsePage.<UserInfo>builder().items(userMapper.getUsersByName(name)).build();
     }
 }

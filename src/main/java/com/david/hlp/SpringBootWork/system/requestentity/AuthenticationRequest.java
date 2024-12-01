@@ -7,31 +7,57 @@ import lombok.NoArgsConstructor;
 
 /**
  * 用户认证请求数据类。
- *
- * 用于封装用户在登录请求中提交的认证信息（如邮箱和密码）。
- * 使用了 Lombok 注解，简化了类的构造和访问器代码。
+ * <p>
+ * 用于封装用户登录或认证请求中提交的必要信息。
+ * <p>
+ * 支持通过邮箱或用户名进行身份认证。
+ * <p>
+ * 使用了 Lombok 注解，简化了类的构造和访问器代码：
+ * <p>
+ * - @Data 自动生成 Getter、Setter、toString、equals 和 hashCode 方法。
+ * <p>
+ * - @Builder 提供构建器模式，便于灵活地创建对象实例。
+ * <p>
+ * - @AllArgsConstructor 自动生成包含所有字段的构造函数。
+ * <p>
+ * - @NoArgsConstructor 自动生成无参构造函数。
  */
-@Data // 自动生成Getter、Setter、toString、equals和hashCode方法
-@Builder // 提供构建器模式用于创建对象
-@AllArgsConstructor // 自动生成全参构造函数
-@NoArgsConstructor  // 自动生成无参构造函数
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthenticationRequest {
 
   /**
    * 用户邮箱。
-   * 用于标识用户的唯一登录凭证。
+   * <p>
+   * 描述：
+   * <p>
+   * - 用于标识用户的唯一登录凭证。
+   * <p>
+   * - 可以作为登录时的标识字段之一。
    */
   private String email;
 
   /**
-   * 用户名称。
-   * 用于标识用户的唯一登录凭证。
+   * 用户名。
+   * <p>
+   * 描述：
+   * <p>
+   * - 用于标识用户的唯一登录凭证。
+   * <p>
+   * - 允许用户通过用户名进行登录。
    */
   private String username;
 
   /**
    * 用户密码。
-   * 用于验证用户身份的敏感信息。
+   * <p>
+   * 描述：
+   * <p>
+   * - 用户的敏感信息，用于验证用户身份。
+   * <p>
+   * - 应在存储和传输时进行加密保护。
    */
   private String password;
 }

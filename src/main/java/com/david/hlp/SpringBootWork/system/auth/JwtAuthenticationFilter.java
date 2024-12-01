@@ -37,8 +37,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   // 用于检查 JWT 是否在数据库中有效
   private final TokenRepository tokenRepository;
 
+  // 用户服务实现类，用于获取用户权限
   private final UserServiceImp userServiceImp;
 
+  // Redis 缓存工具类，用于检查 JWT 是否存在于缓存中
   private final RedisCache redisCache;
 
   /**
@@ -56,17 +58,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           @NonNull HttpServletResponse response,
           @NonNull FilterChain filterChain
   ) throws ServletException, IOException {
-    // 如果请求路径是认证相关的接口，直接放行，不进行 JWT 验证
+
+    // 1. 处理无需认证的接口路径，直接放行请求
     if (request.getServletPath().equals("/api/v1/users/login")
             || request.getServletPath().equals("/api/v1/users/register")
             || request.getServletPath().equals("/api/v1/articles")
             || request.getServletPath().equals("/api/v1/pageviews")
     ) {
+      // 放行请求到下一个过滤器
       filterChain.doFilter(request, response);
       return;
     }
 
-    // 从请求头中获取 Authorization 信息
+    // 2. 从请求头中获取 Authorization 信息
     final String authHeader = request.getHeader("Authorization");
     final String jwt;
     final String userEmail;
@@ -77,29 +81,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
 
-    // 提取 JWT 和用户邮箱
-    jwt = authHeader.substring(7); // 移除 "Bearer " 前缀
+    // 提取 JWT（移除 "Bearer " 前缀）并解析用户邮箱
+    jwt = authHeader.substring(7);
     userEmail = jwtService.extractUsername(jwt);
 
-    // JWT还存在Redis中
+    // 检查 JWT 是否存在于 Redis 缓存中
     redisCache.hasKey(jwt);
 
-    // 如果用户邮箱不为空，且当前上下文中没有已认证的用户
+    // 3. 验证用户邮箱和认证上下文
     if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
       // 从 UserDetailsService 加载用户信息
       UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-      // 检查 JWT 是否有效且未过期或撤销
+      // 检查 JWT 是否在数据库中有效，且未过期或撤销
       var isTokenValid = tokenRepository.findByToken(jwt)
-              .map(t -> !t.isExpired() && !t.isRevoked()) // 检查令牌的状态
+              .map(t -> !t.isExpired() && !t.isRevoked()) // 检查令牌状态
               .orElse(false);
 
-      // 如果令牌有效，设置用户认证信息到 SecurityContext 中
+      // 验证 JWT 是否有效
       if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
+        // 创建用户认证令牌
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                userDetails, // 用户详情
-                null,        // 无需凭据
-                userServiceImp.getAuthorities(userEmail) // 用户权限
+                userDetails, // 用户详细信息
+                null,        // 凭据为空
+                userServiceImp.getAuthorities(userEmail) // 从 UserServiceImp 获取用户权限
         );
 
         // 设置认证请求的详细信息
@@ -107,12 +112,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 new WebAuthenticationDetailsSource().buildDetails(request)
         );
 
-        // 将认证信息设置到 Spring Security 上下文
+        // 将认证信息设置到 Spring Security 的上下文
         SecurityContextHolder.getContext().setAuthentication(authToken);
       }
     }
 
-    // 继续执行过滤器链
+    // 4. 放行请求到过滤器链的下一个过滤器
     filterChain.doFilter(request, response);
   }
 }

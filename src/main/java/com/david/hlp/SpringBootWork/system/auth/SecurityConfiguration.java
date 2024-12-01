@@ -24,24 +24,29 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
  * 配置安全过滤器链、认证授权规则以及会话管理策略。
  */
 @Configuration
-@EnableWebSecurity // 启用 Spring Security
+@EnableWebSecurity // 启用 Spring Security 功能
 @RequiredArgsConstructor // 自动生成包含所有必需依赖项的构造函数
-@EnableMethodSecurity // 启用方法级别的安全注解（如 @PreAuthorize）
+@EnableMethodSecurity // 启用方法级别的安全注解（例如 @PreAuthorize）
 public class SecurityConfiguration {
 
-    // 定义不需要认证的白名单 URL
+    // 定义无需认证的 URL 白名单
     private static final String[] WHITE_LIST_URL = {
-            "/api/v1/**",
+            "/api/v1/**", // 开放的 API 接口
             "/api/v1/auth/**", // 认证相关接口
-            "/api/v1/demo/**",
-            "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", // Swagger 文档
+            "/api/v1/demo/**", // 示例接口
+            "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", // Swagger 文档相关路径
             "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
             "/configuration/security", "/swagger-ui/**", "/webjars/**", "/swagger-ui.html"
     };
 
-    private final JwtAuthenticationFilter jwtAuthFilter; // JWT 认证过滤器
-    private final AuthenticationProvider authenticationProvider; // 自定义认证提供器
-    private final LogoutHandler logoutHandler; // 自定义注销处理器
+    // JWT 认证过滤器
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    // 自定义认证提供器
+    private final AuthenticationProvider authenticationProvider;
+
+    // 自定义注销处理器
+    private final LogoutHandler logoutHandler;
 
     /**
      * 配置安全过滤器链。
@@ -53,52 +58,53 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 禁用 CSRF 防护（因使用无状态认证机制）
+                // 1. 禁用 CSRF（因使用无状态 JWT 认证，无需 CSRF 防护）
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 配置请求授权规则
+                // 2. 配置请求授权规则
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll() // 白名单 URL 无需认证
-//                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGEMENT.name()) // 管理接口需要 ADMIN 或 MANAGER 角色
-//                                .requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name()) // GET 请求需具备读取权限
-//                                .requestMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name()) // POST 请求需具备创建权限
-//                                .requestMatchers(PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name()) // PUT 请求需具备更新权限
-//                                .requestMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name()) // DELETE 请求需具备删除权限
                                 .anyRequest()
                                 .authenticated() // 其他请求需认证
                 )
 
-                // 配置会话管理策略为无状态（JWT）
+                // 3. 配置会话管理策略为无状态（适配 JWT 的机制）
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
 
-                // 设置自定义认证提供器
+                // 4. 设置自定义认证提供器
                 .authenticationProvider(authenticationProvider)
 
-                // 在用户名密码认证过滤器之前添加 JWT 认证过滤器
+                // 5. 在用户名密码认证过滤器之前添加自定义的 JWT 认证过滤器
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
-                // 配置注销处理
+                // 6. 配置注销处理逻辑
                 .logout(logout ->
-                        logout.logoutUrl("/api/v1/auth/logout") // 注销 URL
-                                .addLogoutHandler(logoutHandler) // 自定义注销处理器
-                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()) // 注销成功后清除安全上下文
+                        logout.logoutUrl("/api/v1/auth/logout") // 配置注销请求的 URL
+                                .addLogoutHandler(logoutHandler) // 添加自定义注销处理器
+                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()) // 成功注销后清除安全上下文
                 );
 
         return http.build(); // 构建并返回过滤器链
     }
 
-
+    /**
+     * 配置 CORS（跨域资源共享）策略。
+     *
+     * 允许所有来源、方法和请求头，支持跨域认证。
+     *
+     * @return 配置好的 CorsConfigurationSource。
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOriginPattern("*"); // 允许所有来源
-        config.addAllowedMethod("*");        // 允许所有 HTTP 方法
-        config.addAllowedHeader("*");        // 允许所有 Header
-        config.setAllowCredentials(true);    // 允许携带凭证
+        config.addAllowedOriginPattern("*"); // 允许所有来源（可根据需求限制特定来源）
+        config.addAllowedMethod("*");        // 允许所有 HTTP 方法（如 GET, POST, PUT, DELETE）
+        config.addAllowedHeader("*");        // 允许所有请求头
+        config.setAllowCredentials(true);    // 允许发送凭证（如 Cookie）
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/**", config); // 应用配置到所有路径
 
         return source;
     }

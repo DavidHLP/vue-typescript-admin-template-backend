@@ -13,8 +13,21 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 用户实体类，表示系统中的用户。
- * 实现了 Spring Security 的 UserDetails 接口，用于认证和授权。
+ * 用户实体类。
+ *
+ * 描述：
+ * <p>
+ * - 表示系统中的用户信息。
+ * <p>
+ * - 实现了 Spring Security 的 `UserDetails` 接口，用于用户的认证和授权。
+ * <p>
+ * - 包含用户的基本信息（如姓名、邮箱、密码）以及角色和令牌的关联关系。
+ * <p>
+ * - 使用 Lombok 注解简化代码：
+ *   - @Data 自动生成 Getter、Setter、toString、equals 和 hashCode 方法。
+ *   - @Builder 提供构建器模式，用于灵活创建对象实例。
+ *   - @NoArgsConstructor 自动生成无参构造函数。
+ *   - @AllArgsConstructor 自动生成全参构造函数。
  */
 @Data
 @Builder
@@ -26,7 +39,12 @@ public class User implements UserDetails {
 
   /**
    * 用户的唯一标识符（主键）。
-   * 使用自动递增策略生成主键值。
+   *
+   * 描述：
+   * <p>
+   * - 使用自动递增策略生成主键值。
+   * <p>
+   * - 标识数据库中用户记录的唯一标识符。
    */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,31 +57,50 @@ public class User implements UserDetails {
 
   /**
    * 用户的头像 URL。
+   *
+   * 描述：
+   * - 表示用户头像的存储位置（可以是 URL 路径）。
    */
   private String avatar;
 
   /**
    * 用户的个人简介。
+   *
+   * 描述：
+   * - 用户的个性化描述或简要信息。
    */
   private String introduction;
 
   /**
-   * 用户的电子邮件地址，作为系统中唯一的用户名标识。
-   * 使用 @Column 注解保证该字段在数据库中是唯一且不能为空。
+   * 用户的电子邮件地址。
+   *
+   * 描述：
+   * - 作为系统中唯一的用户名标识。
+   * <p>
+   * - 使用 @Column 注解保证该字段在数据库中是唯一且不能为空。
    */
   @Column(unique = true, nullable = false)
   private String email;
 
   /**
-   * 用户的密码，用于身份验证。
+   * 用户的密码。
+   *
+   * 描述：
+   * - 用于身份验证。
+   * - 在存储前应进行加密处理。
    */
   private String password;
 
   /**
    * 用户的角色。
-   * 通过 @ManyToOne 建立多对一的关联关系，每个用户对应一个角色。
-   * 使用 @JoinColumn 指定外键为 role_id，且 role 表中的主键为 id。
-   * 默认使用 EAGER 加载策略，即在查询用户时自动加载角色信息。
+   *
+   * 描述：
+   * - 通过 @ManyToOne 建立多对一的关联关系，每个用户对应一个角色。
+   * - 默认使用 EAGER 加载策略，即在查询用户时自动加载角色信息。
+   *
+   * 配置：
+   * <p>
+   * - @JoinColumn 指定外键为 role_id，且 role 表中的主键为 id。
    */
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "role_id", referencedColumnName = "id")
@@ -79,18 +116,30 @@ public class User implements UserDetails {
   }
 
   /**
-   * 用户关联的令牌列表，用于支持多令牌场景。
-   * 通过 @OneToMany 注解建立一对多的关联关系。
-   * 使用 mappedBy 指定该关联关系由 Token 实体的 user 字段维护。
-   * 通过 CascadeType.ALL 级联操作，使对用户的增删改操作会同步影响关联的 Token 数据。
-   * orphanRemoval = true 确保删除用户时会移除所有孤立的 Token。
+   * 用户关联的令牌列表。
+   *
+   * 描述：
+   * <p>
+   * - 支持多令牌场景，表示用户当前活跃的认证令牌。
+   * <p>
+   * - 通过 @OneToMany 注解建立一对多的关联关系。
+   * <p>
+   * - 使用 `mappedBy` 指定该关联关系由 Token 实体的 `user` 字段维护。
+   * <p>
+   * - 使用 `CascadeType.ALL` 实现级联操作，对用户的增删改操作会同步影响关联的 Token 数据。
+   * <p>
+   * - orphanRemoval = true 确保删除用户时会移除所有孤立的 Token。
    */
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Token> tokens;
 
+  // Spring Security UserDetails 接口方法实现
+
   /**
    * 获取用户的权限集合。
-   * 权限集合由用户的角色中的权限信息决定。
+   *
+   * 描述：
+   * - 权限集合由用户的角色中的权限信息决定。
    *
    * @return 权限集合，用于授权。
    */
@@ -101,7 +150,6 @@ public class User implements UserDetails {
 
   /**
    * 获取用户的密码。
-   * 该方法由 Spring Security 使用。
    *
    * @return 用户的密码。
    */
@@ -111,8 +159,10 @@ public class User implements UserDetails {
   }
 
   /**
-   * 获取用户的用户名（在此为电子邮件地址）。
-   * 该方法由 Spring Security 使用。
+   * 获取用户的用户名。
+   *
+   * 描述：
+   * - 在此为电子邮件地址。
    *
    * @return 用户的电子邮件地址。
    */
@@ -123,7 +173,9 @@ public class User implements UserDetails {
 
   /**
    * 检查账户是否未过期。
-   * 始终返回 true，表示账户未过期。
+   *
+   * 描述：
+   * - 始终返回 true，表示账户未过期。
    *
    * @return true 表示账户未过期。
    */
@@ -134,7 +186,9 @@ public class User implements UserDetails {
 
   /**
    * 检查账户是否未锁定。
-   * 始终返回 true，表示账户未锁定。
+   *
+   * 描述：
+   * - 始终返回 true，表示账户未锁定。
    *
    * @return true 表示账户未锁定。
    */
@@ -145,7 +199,9 @@ public class User implements UserDetails {
 
   /**
    * 检查凭证是否未过期。
-   * 始终返回 true，表示凭证未过期。
+   *
+   * 描述：
+   * - 始终返回 true，表示凭证未过期。
    *
    * @return true 表示凭证未过期。
    */
@@ -156,7 +212,9 @@ public class User implements UserDetails {
 
   /**
    * 检查账户是否启用。
-   * 始终返回 true，表示账户已启用。
+   *
+   * 描述：
+   * - 始终返回 true，表示账户已启用。
    *
    * @return true 表示账户已启用。
    */

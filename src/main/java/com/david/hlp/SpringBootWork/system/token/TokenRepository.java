@@ -8,8 +8,9 @@ import java.util.Optional;
 
 /**
  * Token 仓库接口。
- *
+ * <p>
  * 提供对 Token 实体的数据库访问操作。
+ * <p>
  * 继承自 JpaRepository，可直接使用常见的 CRUD 方法。
  */
 public interface TokenRepository extends JpaRepository<Token, Integer> {

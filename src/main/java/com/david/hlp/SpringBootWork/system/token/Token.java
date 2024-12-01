@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 
 /**
  * Token 实体类。
- *
+ * <p>
  * 用于存储与用户相关的认证令牌（如 JWT）。
+ * <p>
  * 包括令牌内容、类型、状态（是否过期/撤销）以及关联的用户信息。
  */
 @Data // 自动生成 Getter、Setter、toString、equals 和 hashCode 方法
@@ -35,6 +36,7 @@ public class Token {
 
   /**
    * 令牌类型。
+   * <p>
    * 使用枚举定义，如 BEARER。
    */
   @Enumerated(EnumType.STRING) // 将枚举值存储为字符串
@@ -52,6 +54,7 @@ public class Token {
 
   /**
    * 关联的用户。
+   * <p>
    * 每个令牌属于一个用户，使用多对一关系映射。
    */
   @ManyToOne(fetch = FetchType.LAZY) // 多对一关系，懒加载用户信息

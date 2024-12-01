@@ -4,7 +4,6 @@
 
 <mapper namespace="com.david.hlp.SpringBootWork.system.mapper.UserMapper">
 
-    <!-- 查询用户及其角色和权限 -->
     <select id="getUserByUsername" parameterType="string" resultMap="UserResultMap">
         SELECT
             u.id AS user_id,
@@ -21,7 +20,6 @@
         WHERE u.email = #{username}
     </select>
 
-    <!-- 用户结果映射 -->
     <resultMap id="UserResultMap" type="com.david.hlp.SpringBootWork.system.entity.UserInfo">
 
         <result property="name" column="name" />

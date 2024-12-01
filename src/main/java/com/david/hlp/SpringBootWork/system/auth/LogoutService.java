@@ -21,6 +21,8 @@ public class LogoutService implements LogoutHandler {
 
   // 注入 TokenRepository，用于管理和查询令牌
   private final TokenRepository tokenRepository;
+
+  // 注入 RedisCache，用于缓存令牌的操作
   private final RedisCache redisCache;
 
   /**
@@ -48,20 +50,20 @@ public class LogoutService implements LogoutHandler {
     // 提取 JWT（去除 "Bearer " 前缀）
     jwt = authHeader.substring(7);
 
-    // 删除redis中的JWT
+    // 从 Redis 缓存中删除对应的 JWT
     redisCache.deleteObject(jwt);
 
     // 从数据库中查找存储的令牌
     var storedToken = tokenRepository.findByToken(jwt)
-            .orElse(null);
+            .orElse(null); // 如果找不到令牌，返回 null
 
     // 如果令牌存在，将其标记为失效（过期和撤销）
     if (storedToken != null) {
-      storedToken.setExpired(true);  // 设置令牌过期
-      storedToken.setRevoked(true); // 设置令牌撤销
+      storedToken.setExpired(true);  // 设置令牌为过期
+      storedToken.setRevoked(true); // 设置令牌为撤销
       tokenRepository.save(storedToken); // 更新令牌状态到数据库
 
-      // 清除 SecurityContext 中的认证信息
+      // 清除 SecurityContext 中的认证信息，注销用户会话
       SecurityContextHolder.clearContext();
     }
   }

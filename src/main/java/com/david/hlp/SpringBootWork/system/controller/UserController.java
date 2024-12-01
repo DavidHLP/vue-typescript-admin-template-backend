@@ -12,7 +12,6 @@ import com.david.hlp.SpringBootWork.system.responsentity.ResponsePage;
 import com.david.hlp.SpringBootWork.system.service.imp.AuthenticationServiceImp;
 import com.david.hlp.SpringBootWork.system.service.imp.MailServiceImp;
 import com.david.hlp.SpringBootWork.system.service.imp.UserServiceImp;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,59 +20,85 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 /**
- * 用户控制器类，处理与用户相关的 API 请求。
- * 提供更改密码的功能。
+ * 用户控制器类。
+ *
+ * 描述：
+ * <p>
+ * - 提供与用户相关的 RESTful API 接口。
+ * <p>
+ * - 包括用户认证（登录）、注册、更改密码、查询用户信息等功能。
+ * <p>
+ * - 使用 Lombok 注解简化代码：
+ *   - @RequiredArgsConstructor 自动生成构造函数，注入必要的依赖。
+ *   - @Slf4j 提供日志记录功能。
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1") // 将控制器映射到 /api/v1/users 路径
+@RequestMapping("/api/v1") // 将控制器映射到 /api/v1 路径
 @RequiredArgsConstructor // 自动生成构造函数，注入必要的依赖
 public class UserController extends BaseController {
 
-    // 注入 AuthenticationService 服务类，用于处理具体的认证逻辑
+    /**
+     * 注入认证服务类，用于处理用户认证相关逻辑。
+     */
     private final AuthenticationServiceImp service;
 
+    /**
+     * 注入用户服务类，用于处理用户数据的业务逻辑。
+     */
     private final UserServiceImp userServiceImp;
 
+    /**
+     * 注入邮件服务类，用于发送验证码邮件和处理邮件相关业务。
+     */
     private final MailServiceImp mailService;
 
     /**
-     * 处理更改密码的请求。
-     *
-     * @param request 包含用户当前密码、新密码和确认密码的请求体。
-     * @param connectedUser 当前已认证的用户信息，由 Spring Security 提供的 Principal 对象表示。
-     * @return 返回 200 OK 的响应，表示密码更改成功。
+     * 用户更改密码接口。
+     * <p>
+     * 描述：
+     * - 用户提交当前密码和新密码，系统验证后完成密码更新。
+     * <p>
+     * 请求方式：
+     * - PATCH 请求路径为 `/api/v1/users/password`。
+     * <p>
+     * 参数：
+     * - `request` 包含用户当前密码、新密码和确认密码的请求体。
+     * - `connectedUser` 当前已认证的用户，由 Spring Security 提供的 Principal 对象表示。
+     * <p>
+     * 返回值：
+     * - 返回 200 OK 的响应，表示密码更改成功。
      */
-    @PatchMapping // 使用 HTTP PATCH 方法，用于部分更新资源
+    @PatchMapping("/users/password")
     public ResponseEntity<?> changePassword(
-            @RequestBody ChangePasswordRequest request, // 从请求体中获取更改密码的请求数据
-            Principal connectedUser // 获取当前连接用户的信息
+            @RequestBody ChangePasswordRequest request,
+            Principal connectedUser
     ) {
-        // 调用服务层处理密码更改的逻辑
         userServiceImp.changePassword(request, connectedUser);
-        // 返回成功响应
         return ResponseEntity.ok().build();
     }
 
     /**
      * 用户认证（登录）接口。
-     *
-     * @param request 包含用户登录信息的请求体（如用户名和密码）。
-     * @return 返回包含认证结果的响应，通常包括用户信息和生成的JWT令牌。
+     * <p>
+     * 描述：
+     * - 用户提交用户名和密码，系统验证后返回 JWT 令牌。
+     * <p>
+     * 请求方式：
+     * - POST 请求路径为 `/api/v1/users/login`。
+     * <p>
+     * 参数：
+     * - `request` 包含用户登录信息的请求体（如用户名和密码）。
+     * <p>
+     * 返回值：
+     * - 包含登录结果的响应，通常包括生成的 JWT 令牌。
      */
     @PostMapping("/users/login")
     public Result<LogInResult> authenticate(
-            @RequestBody AuthenticationRequest request // 从请求体中接收认证数据
+            @RequestBody AuthenticationRequest request
     ) {
-
-        System.out.println("request: " + request);
-
-        // 设置 email 字段（如果 username 和 email 是同一个值）
         request.setEmail(request.getUsername());
-
-        // 调用 service 的 authenticate 方法并获取结果
         AuthenticationResponse response = service.authenticate(request);
-
         return Result.<LogInResult>builder()
                 .code(20000L)
                 .message("登录成功")
@@ -81,35 +106,85 @@ public class UserController extends BaseController {
                 .build();
     }
 
+    /**
+     * 获取用户详细信息接口。
+     * <p>
+     * 描述：
+     * - 返回当前登录用户的详细信息。
+     * <p>
+     * 请求方式：
+     * - POST 请求路径为 `/api/v1/users/info`。
+     * <p>
+     * 返回值：
+     * - 包含用户信息的响应。
+     */
     @PostMapping("/users/info")
-    public Result<UserInfo> getUserInfo(){
-
-        return Result.<UserInfo>builder().data(userServiceImp.getUser(getCurrentUsername())).code(20000L).build();
+    public Result<UserInfo> getUserInfo() {
+        return Result.<UserInfo>builder()
+                .data(userServiceImp.getUser(getCurrentUsername()))
+                .code(20000L)
+                .build();
     }
 
     /**
      * 用户注册接口。
-     *
-     * @param request 包含用户注册信息的请求体（如用户名、密码、邮箱等）。
-     * @return 返回包含注册结果的响应，通常包括用户信息和生成的JWT令牌。
+     * <p>
+     * 描述：
+     * - 用户提交注册信息，系统验证后完成注册。
+     * <p>
+     * 请求方式：
+     * - POST 请求路径为 `/api/v1/users/register`。
+     * <p>
+     * 参数：
+     * - `request` 包含用户注册信息的请求体（如用户名、密码、邮箱等）。
+     * <p>
+     * 返回值：
+     * - 包含注册结果的响应，通常包括用户信息和生成的 JWT 令牌。
      */
     @PostMapping("/users/register")
     public Result<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request // 从请求体中接收注册数据
+            @RequestBody RegisterRequest request
     ) {
-        // 调用 service 的 register 方法并返回注册结果
         return Result.ok(service.register(request));
     }
 
+    /**
+     * 用户查询接口。
+     * <p>
+     * 描述：
+     * - 按用户名模糊查询用户列表。
+     * <p>
+     * 请求方式：
+     * - GET 请求路径为 `/api/v1/users`。
+     * <p>
+     * 参数：
+     * - `name` 用户名的查询关键字。
+     * <p>
+     * 返回值：
+     * - 包含用户信息列表的分页响应。
+     */
     @GetMapping("/users")
     public Result<ResponsePage<UserInfo>> getUsers(@RequestParam(value = "name") String name) {
         return Result.ok(userServiceImp.getUsers(name));
     }
 
-    // 发送邮件请求
+    /**
+     * 发送验证码邮件接口。
+     * <p>
+     * 描述：
+     * - 系统向指定邮箱发送验证码，用于密码重置或其他验证。
+     * <p>
+     * 请求方式：
+     * - GET 请求路径为 `/api/v1/users/sendcode/{email}`。
+     * <p>
+     * 参数：
+     * - `email` 接收验证码的邮箱地址。
+     * <p>
+     * 返回值：
+     * - 包含发送结果的响应。
+     */
     @GetMapping("/users/sendcode/{email}")
     public Result<Void> sendMail(@PathVariable("email") String email) {
-        System.out.println("email: " + email);
-        return Result.ok(null,mailService.sendMail(email));
+        return Result.ok(null, mailService.sendMail(email));
     }
 }
