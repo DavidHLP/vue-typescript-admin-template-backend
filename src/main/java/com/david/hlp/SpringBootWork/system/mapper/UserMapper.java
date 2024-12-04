@@ -3,6 +3,7 @@ package com.david.hlp.SpringBootWork.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.david.hlp.SpringBootWork.system.entity.User;
 import com.david.hlp.SpringBootWork.system.entity.UserInfo;
+import com.david.hlp.SpringBootWork.system.responsentity.UserInfoRequest;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @param username 用户名 (通常是邮箱)。
      * @return 用户的角色 ID。
      */
-    @Select("select role_id from user where email = #{username}")
+    @Select("select role_id from user where email = #{username} and status = true")
     Long getRoleIdByUsername(@Param("username") String username);
 
     /**
@@ -69,6 +70,63 @@ public interface UserMapper extends BaseMapper<User> {
      * @param name 用户姓名关键字。
      * @return 包含符合条件用户信息的列表 (List<UserInfo>)。
      */
-    @Select("select * from user where name like concat('%', #{name}, '%')")
+    @Select("select * from user where name like concat('%', #{name}, '%') and status = true")
     List<UserInfo> getUsersByName(@Param("name") String name);
+
+
+    @Update("update user set avatar = #{avatar} where email = #{username}")
+    void updateAvatar(@Param("username") String username, @Param("avatar") String avatar);
+
+    @Update("update user set status = #{status} where id = #{id}")
+    void updateStatus(@Param("id") Long id, @Param("status") boolean status);
+
+
+    /**
+     * 分页获取筛选后的用户列表。
+     *
+     * @param sort   排序字段。
+     * @param offset 分页偏移量。
+     * @param limit  每页记录数。
+     * @param name   用户名筛选条件（可选）。
+     * @param email  邮箱筛选条件（可选）。
+     * @return 用户列表。
+     */
+    List<UserInfo> getFilteredUsers(@Param("sort") String sort,
+                                    @Param("offset") int offset,
+                                    @Param("limit") int limit,
+                                    @Param("name") String name,
+                                    @Param("email") String email,
+                                    @Param("role") String role ,
+                                    @Param("userStatus") Boolean userStatus
+    );
+
+    /**
+     * 获取筛选条件下的用户总数。
+     *
+     * @param name  用户名筛选条件（可选）。
+     * @param email 邮箱筛选条件（可选）。
+     * @return 用户总数。
+     */
+    int countFilteredUsers(
+            @Param("name") String name,
+            @Param("email") String email,
+            @Param("role") String role ,
+            @Param("userStatus") Boolean userStatus
+    );
+
+    @Update("update user set " +
+            "status = #{userInfoRequest.status}, " +
+            "role_id = #{userInfoRequest.roleId}, " +
+            "avatar = #{userInfoRequest.avatar}, " +
+            "email = #{userInfoRequest.email}, " +
+            "introduction = #{userInfoRequest.introduction}, " +
+            "name = #{userInfoRequest.name} " +
+            "where id = #{id}")
+    void updateUserInfo(
+            @Param("userInfoRequest") UserInfoRequest userInfoRequest,
+            @Param("id") Long id,
+            @Param("userStatus") Boolean status
+    );
+
+    UserInfo getUserInfoById(@Param("id") Long id);
 }

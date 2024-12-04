@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.david.hlp.SpringBootWork.system.mapper.RoleMapper">
+
+    <!-- ResultMap 定义 -->
+    <resultMap id="RoleResultMap" type="com.david.hlp.SpringBootWork.system.entity.Role">
+            <id property="id" column="role_id" />
+            <result property="roleName" column="role_name" />
+            <result property="status" column="role_status"/>
+            <result property="description" column="role_description"/>
+
+            <!-- 权限字段 -->
+            <collection property="permissions" ofType="com.david.hlp.SpringBootWork.system.entity.Permission">
+                <id property="id" column="permission_id" />
+                <result property="permission" column="permission_name" />
+                <result property="status" column="Permission_status"/>
+            </collection>
+    </resultMap>
+
+    <select id="countFilteredRoles" resultType="int">
+        SELECT COUNT(DISTINCT r.id)
+        FROM role r
+        LEFT JOIN role_permission rp ON r.id = rp.role_id
+        LEFT JOIN permission p ON rp.permission_id = p.id
+        <where>
+            <if test="roleName != null and roleName != ''">
+                r.role_name LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+            <if test="status != null">
+                AND r.status = #{status}
+            </if>
+            <if test="permission != null and permission != ''">
+                AND p.permission = #{permission}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByRoleAndPermissino" resultMap="RoleResultMap">
+        SELECT DISTINCT
+        r.id AS role_id,
+        r.role_name AS role_name,
+        p.id AS permission_id,
+        p.permission AS permission_name,
+        r.status as role_status,
+        p.status as Permission_status,
+        r.description as role_description
+        FROM (
+        select
+        *
+        from role
+        <where>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        LIMIT #{offset}, #{limit}
+        ) as r
+        LEFT JOIN role_permission rp ON r.id = rp.role_id
+        LEFT JOIN permission p ON rp.permission_id = p.id
+        <where>
+            <if test="roleName != null and roleName != ''">
+                r.role_name LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+            <if test="status != null">
+                AND r.status = #{status}
+            </if>
+            <if test="permission != null and permission != ''">
+                AND p.permission = #{permission}
+            </if>
+        </where>
+        <if test="sort == 'ASC'">
+            ORDER BY r.id ASC , p.id
+        </if>
+        <if test="sort == 'DESC'">
+            ORDER BY r.id DESC, p.id
+        </if>
+    </select>
+
+    <update id="updateRolePermissions" parameterType="com.david.hlp.SpringBootWork.system.entity.RolePermissionInfo">
+            UPDATE role_permission
+            SET
+            permission_id = #{rolePermission.permissionId},
+            role_id = #{rolePermission.roleId}
+            where id = #{rolePermission.id}
+    </update>
+
+    <insert id="insertRolePermissions" parameterType="com.david.hlp.SpringBootWork.system.entity.RolePermissionInfo">
+        INSERT INTO role_permission (status, permission_id, role_id)
+        VALUES (true, #{rolePermission.permissionId}, #{rolePermission.roleId})
+    </insert>
+
+    <delete id="deleteRolePermissions" parameterType="com.david.hlp.SpringBootWork.system.entity.RolePermissionInfo">
+        DELETE FROM role_permission
+        WHERE id = #{rolePermission.id}
+    </delete>
+
+</mapper>

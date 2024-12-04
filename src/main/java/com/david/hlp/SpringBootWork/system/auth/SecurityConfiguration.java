@@ -3,6 +3,7 @@ package com.david.hlp.SpringBootWork.system.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,12 +32,10 @@ public class SecurityConfiguration {
 
     // 定义无需认证的 URL 白名单
     private static final String[] WHITE_LIST_URL = {
-            "/api/v1/**", // 开放的 API 接口
-            "/api/v1/auth/**", // 认证相关接口
-            "/api/v1/demo/**", // 示例接口
             "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", // Swagger 文档相关路径
             "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
-            "/configuration/security", "/swagger-ui/**", "/webjars/**", "/swagger-ui.html"
+            "/api/v1/users/**",
+            "/api/v1/role/manage/**"
     };
 
     // JWT 认证过滤器
@@ -65,6 +64,13 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll() // 白名单 URL 无需认证
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // OPTIONS 请求全局放行
+                                .requestMatchers("/api/v1/user/manage/**").hasRole("ADMIN") // 用户管理接口需要 ADMIN 角色
+                                .requestMatchers("/api/v1/articles/**").hasRole("ADMIN") // 文章管理接口需要 ADMIN 角色
+                                .requestMatchers("/api/v1/pageviews/**").hasRole("ADMIN") // 页面浏览统计接口需要 ADMIN 角色
+                                .requestMatchers("/api/v1/role/manage/**").hasRole("ADMIN")
+                                .requestMatchers("/uploads/**").permitAll() // 静态资源放行
+                                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll() // 其他静态资源放行
                                 .anyRequest()
                                 .authenticated() // 其他请求需认证
                 )
@@ -75,7 +81,7 @@ public class SecurityConfiguration {
                 // 4. 设置自定义认证提供器
                 .authenticationProvider(authenticationProvider)
 
-                // 5. 在用户名密码认证过滤器之前添加自定义的 JWT 认证过滤器
+                // 5. 在用户名密码认证过滤器之前添加自定义的 JWT 认证过滤器ya
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
                 // 6. 配置注销处理逻辑

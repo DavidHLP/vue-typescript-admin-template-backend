@@ -50,6 +50,10 @@ public class RolePermission {
     @TableId(type = com.baomidou.mybatisplus.annotation.IdType.AUTO) // MyBatis Plus 主键自增
     private Long id;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT true", nullable = false)
+    private Boolean status;
+
+
     /**
      * 角色 ID。
      *
@@ -72,7 +76,7 @@ public class RolePermission {
      *   - referencedColumnName = "id"：引用角色表中的主键列名。
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", referencedColumnName = "id") // 外键关联到 Role 表
+    @JoinColumn(name = "role_id", referencedColumnName = "id",nullable = false) // 外键关联到 Role 表
     private Role role;
 
     /**
@@ -97,6 +101,6 @@ public class RolePermission {
      *   - referencedColumnName = "id"：引用权限表中的主键列名。
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "permission_id", referencedColumnName = "id") // 外键关联到 Permission 表
+    @JoinColumn(name = "permission_id", referencedColumnName = "id" ,nullable = false) // 外键关联到 Permission 表
     private Permission permission;
 }

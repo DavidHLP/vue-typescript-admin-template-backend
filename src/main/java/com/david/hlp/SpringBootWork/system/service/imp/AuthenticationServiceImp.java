@@ -56,7 +56,7 @@ public class AuthenticationServiceImp {
   private final RoleMapper roleMapper;
 
   // 默认角色名称，来自枚举 DefaultRole
-  private final String defaultRoleName = DefaultRole.ADMIN.getRole();
+  private final String defaultRoleName = DefaultRole.GUEST.getRole();
 
   // Redis 缓存工具类
   private final RedisCache redisCache;

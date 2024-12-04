@@ -1,7 +1,9 @@
 package com.david.hlp.SpringBootWork.system.Repository;
 
 import com.david.hlp.SpringBootWork.system.entity.User;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -33,5 +35,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
    * @param email 用户邮箱地址。
    * @return 包含用户信息的 Optional 对象。如果未找到用户，则返回一个空的 Optional。
    */
-  Optional<User> findByEmail(String email);
+  @Query("SELECT u FROM User u WHERE u.email = :email AND u.status = true")
+  Optional<User> findByEmail(@Param("email") String email);
 }

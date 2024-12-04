@@ -1,6 +1,7 @@
 package com.david.hlp.SpringBootWork.demo.controller;
 
 import com.david.hlp.SpringBootWork.demo.entity.ArticleWrapper;
+import com.david.hlp.SpringBootWork.demo.entity.DraggableTable;
 import com.david.hlp.SpringBootWork.demo.service.DraggableTableService;
 import com.david.hlp.SpringBootWork.demo.util.DraggableTableResult;
 import com.david.hlp.SpringBootWork.system.entity.Result;
@@ -33,13 +34,13 @@ public class DraggableTableController {
      * @return 包含分页结果的通用响应对象。
      */
     @GetMapping
-    public Result<DraggableTableResult> getAllArticles(
+    public Result<DraggableTableResult<DraggableTable>> getAllArticles(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "limit", defaultValue = "20") int limit,
             @RequestParam(value = "importance", required = false) Integer importance,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "sort", defaultValue = "+id") String sort
+            @RequestParam(value = "sort", defaultValue = "id") String sort
     ) {
         // 调用服务层方法获取分页结果，并返回响应对象
         return Result.ok(draggableTableService.getPageviews(page, limit, importance, title, type, sort));
@@ -52,10 +53,10 @@ public class DraggableTableController {
      * @return 包含文章详情的通用响应对象，如果未找到则返回 404。
      */
     @GetMapping("/{id}")
-    public Result<ArticleWrapper> getArticleById(@PathVariable Long id) {
+    public Result<ArticleWrapper<DraggableTable>> getArticleById(@PathVariable Long id) {
         // 调用服务层方法获取文章详情
         return draggableTableService.getArticleById(id)
-                .map(article -> ArticleWrapper.builder().article(article).build()) // 封装为 ArticleWrapper
+                .map(article -> ArticleWrapper.<DraggableTable>builder().article(article).build()) // 封装为 ArticleWrapper
                 .map(Result::ok) // 包装为通用响应对象
                 .orElseGet(() -> Result.notFound("Article with ID " + id + " not found")); // 未找到返回 404 响应
     }
@@ -67,11 +68,11 @@ public class DraggableTableController {
      * @return 包含创建成功的文章详情的通用响应对象。
      */
     @PostMapping
-    public Result<ArticleWrapper> createArticle(@RequestBody ArticleWrapper articleWrapper) {
+    public Result<ArticleWrapper<DraggableTable>> createArticle(@RequestBody ArticleWrapper<DraggableTable> articleWrapper) {
         // 确保新创建的文章没有 ID（由数据库自动生成）
         articleWrapper.getArticle().setId(null);
         // 调用服务层方法创建文章，并返回响应对象
-        return Result.ok(ArticleWrapper.builder()
+        return Result.ok(ArticleWrapper.<DraggableTable>builder()
                 .article(draggableTableService.createArticle(articleWrapper.getArticle()))
                 .build());
     }
@@ -86,12 +87,12 @@ public class DraggableTableController {
      * @return 包含更新后的文章详情的通用响应对象。
      */
     @PutMapping("/{id}")
-    public Result<ArticleWrapper> updateArticle(
+    public Result<ArticleWrapper<DraggableTable>> updateArticle(
             @PathVariable Long id,
-            @RequestBody ArticleWrapper articleWrapper) {
+            @RequestBody ArticleWrapper<DraggableTable> articleWrapper) {
         try {
             // 调用服务层方法更新文章，并返回响应对象
-            return Result.ok(ArticleWrapper.builder()
+            return Result.ok(ArticleWrapper.<DraggableTable>builder()
                     .article(draggableTableService.updateArticle(id, articleWrapper.getArticle()))
                     .build());
         } catch (RuntimeException e) {

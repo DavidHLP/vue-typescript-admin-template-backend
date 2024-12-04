@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder // 提供 Builder 模式，便于对象构造
 @NoArgsConstructor // 生成无参构造函数
 @AllArgsConstructor // 生成全参构造函数
-public class ArticleWrapper {
+public class ArticleWrapper <T> {
 
     /**
      * 包装的文章对象。
@@ -24,5 +24,5 @@ public class ArticleWrapper {
      * 在 JSON 序列化和反序列化时，映射到 "article" 字段。
      */
     @JsonProperty("article")
-    private DraggableTable article;
+    private T article;
 }

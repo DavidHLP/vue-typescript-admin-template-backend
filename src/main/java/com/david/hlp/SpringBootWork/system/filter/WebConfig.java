@@ -1,10 +1,13 @@
-package com.david.hlp.SpringBootWork.system.auth;
+package com.david.hlp.SpringBootWork.system.filter;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * 全局 CORS 配置类。
@@ -12,7 +15,7 @@ import org.springframework.web.filter.CorsFilter;
  * 配置跨域资源共享（CORS）规则，用于处理前后端分离架构中的跨域请求。
  */
 @Configuration
-public class WebConfig {
+public class WebConfig implements WebMvcConfigurer {
 
     /**
      * 定义一个全局的 CORS 过滤器。
@@ -40,5 +43,17 @@ public class WebConfig {
 
         // 返回配置好的 CORS 过滤器实例
         return new CorsFilter(source);
+    }
+
+
+    @Value("${file.upload-dir}")
+    private String uploadPath;
+    @Value("${file.url-address}")
+    private String urlAddress;
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(urlAddress+"**")
+                .addResourceLocations("file:" + uploadPath);
     }
 }

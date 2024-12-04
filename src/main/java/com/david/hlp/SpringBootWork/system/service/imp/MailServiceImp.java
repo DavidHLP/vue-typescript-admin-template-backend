@@ -66,13 +66,15 @@ public class MailServiceImp {
             throw new RuntimeException("邮件已经发送");
         }
 
+        String work = "注册账号";
+
         // 创建邮件消息
         SimpleMailMessage message = new SimpleMailMessage();
         message.setSubject("【验证码】"); // 邮件主题
         String code = generateSixDigitCode(); // 生成验证码
 
         // 设置邮件内容
-        message.setText("您好，\n\n您正在尝试重置密码，您的验证码是："
+        message.setText("您好，\n\n您正在尝试"+work+"，您的验证码是："
                 + code
                 + "。\n验证码有效期为"
                 + outTime

@@ -49,4 +49,24 @@ public interface DraggableTableMapper extends BaseMapper<DraggableTable> {
             @Param("importance") Integer importance,
             @Param("title") String title,
             @Param("type") String type);
+
+
+    /**
+     * 获取满足筛选条件的文章列表。
+     *
+     * @param importance 筛选条件：文章重要性（可选）。
+     * @param title      筛选条件：文章标题（可选）。
+     * @param type       筛选条件：文章类型（可选）。
+     * @param sortField  排序字段（如 "id", "timestamp"）。
+     * @param offset     分页偏移量（从第几条记录开始）。
+     * @param limit      分页限制（每页显示的记录数）。
+     * @return 符合条件的文章列表。
+     */
+    List<DraggableTable> getFilteredArticlesDefault(
+            @Param("importance") Integer importance,
+            @Param("title") String title,
+            @Param("type") String type,
+            @Param("sortField") String sortField,
+            @Param("offset") int offset,
+            @Param("limit") int limit);
 }

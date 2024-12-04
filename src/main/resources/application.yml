@@ -1,6 +1,11 @@
 spring:
   profiles:
     active: local
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      location: /home/david/Project/SpringBootWork/src/main/java/com/david/hlp/SpringBootWork/download/upload/
   application:
     name: SpringBootWork
   datasource:
@@ -18,8 +23,8 @@ spring:
   mail:
     outTime: 15
     host: smtp.163.com # 你邮箱的smtp地址
-    username: xxxxxxx.com # 申请了smtp的邮箱
-    password: xxxxxxx # SMTP服务的秘钥
+    username: xxxxxxxxxxxxxx@163.com # 申请了smtp的邮箱
+    password: xxxxxxxxxxxx # SMTP服务的秘钥
     properties:
       mail:
         smtp:
@@ -29,9 +34,7 @@ spring:
 
   jpa:
     hibernate:
-#      ddl-auto: update
       ddl-auto: create-drop
-#    show-sql: true # 开发阶段设置为 true
     show-sql: false # 开发阶段设置为 true
     properties:
       hibernate:
@@ -77,6 +80,16 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath*:/mapper/**/*.xml
+
 #  typeAliasesPackage: com.david.hlp.SpringBootWork.user # 指定实体类所在包
+
+file:
+  upload:
+
+  upload-dir: /home/david/Project/SpringBootWork/src/main/java/com/david/hlp/SpringBootWork/download/upload/
+  http: '127.0.0.1:8080'
+  url-address: '/uploads/'
 

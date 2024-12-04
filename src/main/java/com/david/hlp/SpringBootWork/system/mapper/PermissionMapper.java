@@ -2,6 +2,7 @@ package com.david.hlp.SpringBootWork.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.david.hlp.SpringBootWork.system.entity.Permission;
+import com.david.hlp.SpringBootWork.system.entity.RolePermissionInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -42,7 +43,14 @@ public interface PermissionMapper extends BaseMapper<Permission> {
      * @return 包含权限信息的列表 (List<Permission>)。
      */
     @Select("SELECT p.* FROM permission p " +
-            "LEFT JOIN role_permission rp ON p.id = rp.permission_id " +
-            "WHERE rp.role_id = #{roleId}")
+            "LEFT JOIN role_permission rp ON p.id = rp.permission_id and rp.status = true " +
+            "WHERE rp.role_id = #{roleId} and p.status = true ")
     List<Permission> selectPermissionsByRoleId(@Param("roleId") Long roleId);
+    @Select("SELECT p.* FROM permission p " +
+            "LEFT JOIN role_permission rp ON p.id = rp.permission_id and rp.status = true ")
+    List<Permission> selectPermissions();
+
+
+    @Select("select * from role_permission where role_id = #{roleId}")
+    List<RolePermissionInfo> selectRolePermissionInfoByRoleId(@Param("roleId") Long roleId);
 }

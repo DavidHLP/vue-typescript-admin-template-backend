@@ -53,6 +53,7 @@ public class Role {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column( nullable = false)
     @TableId(type = com.baomidou.mybatisplus.annotation.IdType.AUTO) // MyBatis Plus 主键自增
     private Long id;  // 主键
 
@@ -67,6 +68,12 @@ public class Role {
      */
     @Column(unique = true, nullable = false)
     private String roleName;  // 角色名称
+
+    private String description;
+
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT true" , nullable = false)
+    private Boolean status;
 
     /**
      * 角色对应的权限集合。

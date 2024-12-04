@@ -2,7 +2,10 @@ package com.david.hlp.SpringBootWork.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.david.hlp.SpringBootWork.system.entity.Role;
+import com.david.hlp.SpringBootWork.system.entity.RolePermission;
+import com.david.hlp.SpringBootWork.system.entity.RolePermissionInfo;
 import org.apache.ibatis.annotations.*;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -42,9 +45,9 @@ public interface RoleMapper extends BaseMapper<Role> {
      */
     @Select("SELECT DISTINCT r.* " +
             "FROM role r " +
-            "LEFT JOIN role_permission rp ON r.id = rp.role_id " +
-            "LEFT JOIN permission p ON rp.permission_id = p.id " +
-            "WHERE r.role_name = #{roleName}")
+            "LEFT JOIN role_permission rp ON r.id = rp.role_id and rp.status = true " +
+            "LEFT JOIN permission p ON rp.permission_id = p.id and p.status = true " +
+            "WHERE r.role_name = #{roleName} and r.status = true ")
     @Results({
             @Result(property = "id", column = "id"), // 映射角色 ID
             @Result(property = "roleName", column = "role_name"), // 映射角色名称
@@ -74,9 +77,9 @@ public interface RoleMapper extends BaseMapper<Role> {
      */
     @Select("SELECT DISTINCT r.* " +
             "FROM role r " +
-            "LEFT JOIN role_permission rp ON r.id = rp.role_id " +
-            "LEFT JOIN permission p ON rp.permission_id = p.id " +
-            "WHERE r.id = #{roleId}")
+            "LEFT JOIN role_permission rp ON r.id = rp.role_id and rp.status = true " +
+            "LEFT JOIN permission p ON rp.permission_id = p.id and p.status = true " +
+            "WHERE r.id = #{roleId} and r.status = true ")
     @Results({
             @Result(property = "id", column = "id"), // 映射角色 ID
             @Result(property = "roleName", column = "role_name"), // 映射角色名称
@@ -84,4 +87,25 @@ public interface RoleMapper extends BaseMapper<Role> {
                     many = @Many(select = "com.david.hlp.SpringBootWork.system.mapper.PermissionMapper.selectPermissionsByRoleId")) // 加载权限列表
     })
     Role selectByRoleId(@Param("roleId") Long roleId);
+
+    @Select("select * from role")
+    List<Role> selectAllRole();
+
+    @Update("update role set status = #{status} where id = #{id}")
+    void updateStatus(@Param("id") Long id, @Param("status") boolean status);
+
+    List<Role> selectByRoleAndPermissino(int offset ,int page,int limit,String sort,String roleName, Boolean status , String permission);
+
+    int countFilteredRoles(@Param("roleName")String roleName, @Param("status")Boolean status , @Param("permission")String permission);
+
+    @Update("update role set " +
+            "status = #{status} , " +
+            "role_name = #{roleName} , " +
+            "description = #{description} " +
+            "where id = #{id}")
+    void updataRole(@Param("roleName")String roleName , @Param("status")Boolean status , @Param("description")String description , @Param("id")Long id);
+
+    void updateRolePermissions(@Param("rolePermission") RolePermissionInfo rolePermission);
+    void insertRolePermissions(@Param("rolePermission") RolePermissionInfo rolePermission);
+    void deleteRolePermissions(@Param("rolePermission") RolePermissionInfo rolePermission);
 }

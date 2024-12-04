@@ -58,15 +58,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           @NonNull HttpServletResponse response,
           @NonNull FilterChain filterChain
   ) throws ServletException, IOException {
-
-    // 1. 处理无需认证的接口路径，直接放行请求
-    if (request.getServletPath().equals("/api/v1/users/login")
+    // 直接放行的接口路径
+    if (request.getServletPath().equals("/api/v1/users/password")
+            || request.getServletPath().equals("/api/v1/users/login")
             || request.getServletPath().equals("/api/v1/users/register")
-            || request.getServletPath().equals("/api/v1/articles")
-            || request.getServletPath().equals("/api/v1/pageviews")
+            || request.getServletPath().startsWith("/api/v1/users/sendcode/")
+            || request.getServletPath().startsWith("/api/v1/role/manage/")
     ) {
-      // 放行请求到下一个过滤器
-      filterChain.doFilter(request, response);
+      filterChain.doFilter(request, response); // 放行请求到下一个过滤器
       return;
     }
 

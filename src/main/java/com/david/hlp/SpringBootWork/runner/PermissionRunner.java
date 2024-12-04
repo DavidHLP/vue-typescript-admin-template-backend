@@ -38,6 +38,7 @@ public class PermissionRunner {
                         null,                           // ID 为 null，由数据库自动生成
                         permission.getPermission(),     // 枚举中的权限名称
                         null                            // 其他字段留空
+                        ,true
                 );
                 permissionRepository.save(permissionEntity); // 保存实体到数据库
             }

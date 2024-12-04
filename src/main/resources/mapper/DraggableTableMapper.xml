@@ -38,4 +38,22 @@
         </if>
     </select>
 
+    <!-- 动态查询文章 -->
+    <select id="getFilteredArticlesDefault" resultType="com.david.hlp.SpringBootWork.demo.entity.DraggableTable">
+        SELECT *
+        FROM draggable_table
+        WHERE 1=1
+        <if test="importance != null">
+            AND importance = #{importance}
+        </if>
+        <if test="title != null and title != ''">
+            AND title LIKE CONCAT('%', #{title}, '%')
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type}
+        </if>
+        ORDER BY ${sortField}
+        LIMIT #{offset}, #{limit}
+    </select>
+
 </mapper>

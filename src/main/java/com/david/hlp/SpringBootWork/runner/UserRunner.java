@@ -9,64 +9,71 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 用户初始化运行器。
  *
- * 在应用启动时运行，用于检查并初始化管理员用户。
+ * 在应用启动时运行，用于检查并初始化系统用户。
  */
-@Service // 将类标记为 Spring 服务组件
-@RequiredArgsConstructor // 自动生成包含所有必需依赖项的构造函数
-@DependsOn({"roleRunner"}) // 确保 RoleRunner 先于本运行器执行
+@Service
+@RequiredArgsConstructor
+@DependsOn({"roleRunner"})
 public class UserRunner {
 
-    /**
-     * 用于加密和验证密码的工具。
-     */
     private final PasswordEncoder passwordEncoder;
-
-    /**
-     * 用于用户持久化操作的存储库。
-     */
     private final UserRepository userRepository;
-
-    /**
-     * 用于角色持久化操作的存储库。
-     */
     private final RoleRepository roleRepository;
 
-    /**
-     * 管理员用户的默认信息。
-     */
-    private final String ADMIN_NAME = "Spike";
-    private final String ADMIN_PASSWORD = "#Alone117";
-    private final String ADMIN_EMAIL = "Spike@163.com";
-
-    /**
-     * 初始化方法。
-     *
-     * 使用 @PostConstruct 注解，确保该方法在依赖注入完成后立即运行。
-     * 方法功能是检查数据库中是否存在管理员用户，如果不存在则创建并保存管理员用户。
-     */
     @PostConstruct
     public void init() {
-        // 检查是否已经存在管理员用户
-        if (userRepository.findByEmail(ADMIN_EMAIL).isEmpty()) {
-            // 创建管理员用户
-            User adminUser = User.builder()
-                    .name(ADMIN_NAME) // 设置管理员名称
-                    .email(ADMIN_EMAIL) // 设置管理员邮箱
-                    .password(passwordEncoder.encode(ADMIN_PASSWORD)) // 加密密码并设置
-                    .role(roleRepository.findByRoleName("ADMIN")) // 设置角色为 ADMIN
-                    .build();
+        // 定义默认用户列表
+        List<User> defaultUsers = new ArrayList<>();
+        defaultUsers.add( User.builder()
+                .name("Admin User")
+                .email("admin@system.com")
+                .password(passwordEncoder.encode("admin123"))
+                .role(roleRepository.findByRoleName("Admin"))
+                .introduction("测试账号")
+                .status(true)
+                .build()
+        );
+        defaultUsers.addAll(createUsers("Admin", "ADMIN", 5, "我是管理员，负责系统的管理与权限配置。"));
+        defaultUsers.addAll(createUsers("Manager", "MANAGEMENT", 8, "我是管理者，负责协调事务与资源分配。"));
+        defaultUsers.addAll(createUsers("Guest", "GUEST", 7, "我是访客，访问公开内容，了解基本功能。"));
 
-            // 保存管理员用户到数据库
-            userRepository.save(adminUser);
+        // 遍历用户列表并检查是否已经存在
+        defaultUsers.forEach(user -> {
+            if (userRepository.findByEmail(user.getEmail()).isEmpty()) {
+                userRepository.save(user);
+            }
+        });
+    }
 
-            // 输出日志，表示管理员用户已初始化
-            System.out.println("Admin user initialized: " + ADMIN_NAME);
-        } else {
-            // 输出日志，表示管理员用户已存在
-            System.out.println("Admin user already exists.");
+    /**
+     * 创建指定数量的用户
+     *
+     * @param rolePrefix 角色前缀（如 Admin、Manager、Guest）
+     * @param roleName   用户角色
+     * @param count      用户数量
+     * @param intro      用户简介
+     * @return 创建的用户列表
+     */
+    private List<User> createUsers(String rolePrefix, String roleName, int count, String intro) {
+        List<User> users = new ArrayList<>();
+        for (int i = 1; i <= count; i++) {
+            users.add(
+                    User.builder()
+                            .name(rolePrefix + " User " + i)
+                            .email(rolePrefix.toLowerCase() + i + "@system.com")
+                            .password(passwordEncoder.encode("admin123"))
+                            .role(roleRepository.findByRoleName(roleName))
+                            .introduction(intro + " 用户编号：" + i)
+                            .status(i%2 == 0)
+                            .build()
+            );
         }
+        return users;
     }
 }

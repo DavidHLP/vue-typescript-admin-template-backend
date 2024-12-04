@@ -44,9 +44,6 @@ public class PageviewsController extends BaseController {
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "sort", defaultValue = "+id") String sort) {
 
-        // 输出请求参数，用于调试
-        System.out.println("page:" + page + " limit:" + limit + " importance:" + importance + " title:" + title + " type:" + type);
-
         // 调用服务层方法获取分页结果，并返回响应对象
         return Result.ok(draggableTableService.getPageviews(page, limit, importance, title, type, sort));
     }

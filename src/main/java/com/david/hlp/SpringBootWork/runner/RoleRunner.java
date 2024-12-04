@@ -35,6 +35,7 @@ public class RoleRunner {
         if (!roleRepository.existsByRoleName(ROLE_GUEST)) {
             Role userRole = new Role();
             userRole.setRoleName(ROLE_GUEST); // 设置角色名称为 GUEST
+            userRole.setStatus(true);
             roleRepository.save(userRole);   // 保存到数据库
         }
 
@@ -42,6 +43,7 @@ public class RoleRunner {
         if (!roleRepository.existsByRoleName(ROLE_ADMIN)) {
             Role adminRole = new Role();
             adminRole.setRoleName(ROLE_ADMIN); // 设置角色名称为 ADMIN
+            adminRole.setStatus(true);
             roleRepository.save(adminRole);   // 保存到数据库
         }
 
@@ -49,6 +51,7 @@ public class RoleRunner {
         if (!roleRepository.existsByRoleName(ROLE_MANAGER)) {
             Role managerRole = new Role();
             managerRole.setRoleName(ROLE_MANAGER); // 设置角色名称为 MANAGEMENT
+            managerRole.setStatus(true);
             roleRepository.save(managerRole);     // 保存到数据库
         }
     }

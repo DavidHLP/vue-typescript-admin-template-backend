@@ -1,14 +1,15 @@
 package com.david.hlp.SpringBootWork.system.service.imp;
 
-import com.david.hlp.SpringBootWork.system.entity.Permission;
-import com.david.hlp.SpringBootWork.system.entity.Role;
-import com.david.hlp.SpringBootWork.system.entity.UserInfo;
+import com.david.hlp.SpringBootWork.demo.entity.ArticleWrapper;
+import com.david.hlp.SpringBootWork.demo.entity.DraggableTable;
+import com.david.hlp.SpringBootWork.demo.util.DraggableTableResult;
+import com.david.hlp.SpringBootWork.system.entity.*;
 import com.david.hlp.SpringBootWork.system.mapper.RoleMapper;
 import com.david.hlp.SpringBootWork.system.mapper.UserMapper;
 import com.david.hlp.SpringBootWork.system.requestentity.ChangePasswordRequest;
-import com.david.hlp.SpringBootWork.system.entity.User;
 import com.david.hlp.SpringBootWork.system.Repository.UserRepository;
 import com.david.hlp.SpringBootWork.system.responsentity.ResponsePage;
+import com.david.hlp.SpringBootWork.system.responsentity.UserInfoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -136,5 +137,54 @@ public class UserServiceImp {
     public ResponsePage<UserInfo> getUsers(String name) {
         // 查询符合条件的用户列表，并构建分页结果
         return ResponsePage.<UserInfo>builder().items(userMapper.getUsersByName(name)).build();
+    }
+
+    public void updateAvatarByUsername(String username, String avatar) {
+        userMapper.updateAvatar(username, avatar);
+    }
+
+    public void disableUser(Long id) {
+        userMapper.updateStatus(id,false);
+    }
+
+    public void enableUser(Long id) {
+        userMapper.updateStatus(id,true);
+    }
+
+    /**
+     * 分页获取用户信息，支持筛选和排序。
+     *
+     * @param page  当前页码。
+     * @param limit 每页记录数。
+     * @param sort  排序字段。
+     * @param name  用户名（可选）。
+     * @param email 邮箱（可选）。
+     * @return 包含分页结果的对象。
+     */
+    public DraggableTableResult<UserInfo> getFilteredUsers(
+            int page, int limit, String sort, String name, String email , String role , Boolean userStatus
+    ) {
+        // 计算分页偏移量
+        int offset = (page - 1) * limit;
+
+        sort = sort.equals("+id") ? "ASC" : "DESC";
+
+        // 获取筛选后的用户数据
+        List<UserInfo> users = userMapper.getFilteredUsers(sort, offset, limit, name, email , role , userStatus);
+
+        // 查询总用户数（支持筛选）
+        int total = userMapper.countFilteredUsers(name, email,role , userStatus);
+
+        // 构建结果对象
+        return DraggableTableResult.<UserInfo>builder()
+                .items(users)
+                .total(total)
+                .build();
+    }
+
+    public ArticleWrapper<UserInfo> updateUserInfo(Long id, UserInfoRequest userInfoRequest) {
+        userMapper.updateUserInfo(userInfoRequest, id , userInfoRequest.getStatus());
+        UserInfo userInfo = userMapper.getUserInfoById(id);
+        return ArticleWrapper.<UserInfo>builder().article(userInfo).build();
     }
 }

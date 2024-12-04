@@ -52,6 +52,7 @@ public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // JPA 主键自增策略
     @TableId(type = com.baomidou.mybatisplus.annotation.IdType.AUTO) // MyBatis Plus 主键自增
+    @Column(nullable = false)
     private Long id;  // 主键
 
     /**
@@ -81,4 +82,8 @@ public class Permission {
      * - 该字段为可选字段，可以为空。
      */
     private String description;  // 权限描述
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT true" , nullable = false)
+    private Boolean status;
+
 }

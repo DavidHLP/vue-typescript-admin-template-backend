@@ -51,7 +51,6 @@ public class DraggableTableService {
 
             // 批量保存到数据库
             draggableTableRepository.saveAll(draggableTables);
-            System.out.println("Data loaded and saved to the database successfully.");
         } catch (IOException e) {
             // 捕获 IO 异常并抛出运行时异常
             throw new RuntimeException("Failed to load data from JSON file: " + e.getMessage(), e);
@@ -63,9 +62,9 @@ public class DraggableTableService {
      *
      * @return 包含文章列表和总数的结果对象。
      */
-    public DraggableTableResult getAllArticles() {
+    public DraggableTableResult<DraggableTable> getAllArticles() {
         List<DraggableTable> res = draggableTableRepository.findAll(); // 查询所有文章
-        return DraggableTableResult.builder().items(res).total(res.size()).build(); // 构建结果对象
+        return DraggableTableResult.<DraggableTable>builder().items(res).total(res.size()).build(); // 构建结果对象
     }
 
     /**
@@ -138,7 +137,7 @@ public class DraggableTableService {
      * @param sort       排序规则（如 "+id" 或 "-id"）。
      * @return 包含分页结果的结果对象。
      */
-    public DraggableTableResult getPageviews(
+    public DraggableTableResult<DraggableTable> getPageviews(
             Integer page,
             Integer limit,
             Integer importance,
@@ -146,22 +145,17 @@ public class DraggableTableService {
             String type,
             String sort) {
 
-        // 解析排序字段和顺序
-        String sortField = sort.substring(1); // 去掉前缀 "+" 或 "-"
-        String sortOrder = sort.startsWith("+") ? "ASC" : "DESC";
-
         // 计算分页偏移量
         int offset = (page - 1) * limit;
 
-        // 查询文章列表
-        List<DraggableTable> articles = draggableTableMapper.getFilteredArticles(
-                importance, title, type, sortField, sortOrder, offset, limit);
+        List<DraggableTable> articles = draggableTableMapper.getFilteredArticlesDefault(
+                importance, title, type, sort, offset, limit);
 
         // 查询文章总数
         int total = draggableTableMapper.countFilteredArticles(importance, title, type);
 
         // 构建结果对象
-        return DraggableTableResult.builder()
+        return DraggableTableResult.<DraggableTable>builder()
                 .items(articles)
                 .total(total)
                 .build();

@@ -47,12 +47,14 @@ public class User implements UserDetails {
    * - 标识数据库中用户记录的唯一标识符。
    */
   @Id
+  @Column(nullable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   /**
    * 用户的姓名。
    */
+  @Column(nullable = false)
   private String name;
 
   /**
@@ -89,6 +91,7 @@ public class User implements UserDetails {
    * - 用于身份验证。
    * - 在存储前应进行加密处理。
    */
+  @Column(nullable = false)
   private String password;
 
   /**
@@ -103,7 +106,7 @@ public class User implements UserDetails {
    * - @JoinColumn 指定外键为 role_id，且 role 表中的主键为 id。
    */
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "role_id", referencedColumnName = "id")
+  @JoinColumn(name = "role_id", referencedColumnName = "id" , nullable = false)
   private Role role;
 
   /**
@@ -132,6 +135,10 @@ public class User implements UserDetails {
    */
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Token> tokens;
+
+  @Column(columnDefinition = "BOOLEAN DEFAULT true", nullable = false)
+  @Builder.Default
+  private Boolean status = Boolean.TRUE;
 
   // Spring Security UserDetails 接口方法实现
 
