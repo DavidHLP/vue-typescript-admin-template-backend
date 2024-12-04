@@ -20,6 +20,7 @@
 ## 目录结构
 
 ```bash
+.
 ├── java
 │   └── com
 │       └── david
@@ -40,6 +41,17 @@
 │                   │   │   └── DraggableTableService.java
 │                   │   └── util
 │                   │       └── DraggableTableResult.java
+│                   ├── download
+│                   │   ├── controller
+│                   │   │   └── FileController.java
+│                   │   ├── entity
+│                   │   │   └── FileResult.java
+│                   │   ├── service
+│                   │   │   ├── FileService.java
+│                   │   │   └── imp
+│                   │   │       └── FileServiceImpl.java
+│                   │   └── upload
+│                   │       └── filterchain.png
 │                   ├── runner
 │                   │   ├── DataLoaderRunner.java
 │                   │   ├── PermissionRunner.java
@@ -56,25 +68,29 @@
 │                       │   ├── JwtAuthenticationFilter.java
 │                       │   ├── JwtService.java
 │                       │   ├── LogoutService.java
-│                       │   ├── SecurityConfiguration.java
-│                       │   └── WebConfig.java
+│                       │   └── SecurityConfiguration.java
 │                       ├── controller
 │                       │   ├── AdminController.java
 │                       │   ├── AuthenticationController.java
 │                       │   ├── RoleController.java
+│                       │   ├── RoleManageController.java
 │                       │   ├── SpringMailController.java
-│                       │   └── UserController.java
+│                       │   ├── UserController.java
+│                       │   └── UserManageController.java
 │                       ├── entity
 │                       │   ├── LogInResult.java
 │                       │   ├── Permission.java
 │                       │   ├── Result.java
 │                       │   ├── Role.java
+│                       │   ├── RolePermissionInfo.java
 │                       │   ├── RolePermission.java
 │                       │   ├── UserInfo.java
 │                       │   └── User.java
 │                       ├── enumentity
 │                       │   ├── DefaultRole.java
 │                       │   └── DefaultRolePermission.java
+│                       ├── filter
+│                       │   └── WebConfig.java
 │                       ├── Main.java
 │                       ├── mapper
 │                       │   ├── PermissionMapper.java
@@ -88,16 +104,19 @@
 │                       ├── requestentity
 │                       │   ├── AuthenticationRequest.java
 │                       │   ├── ChangePasswordRequest.java
-│                       │   └── RegisterRequest.java
+│                       │   ├── RegisterRequest.java
+│                       │   └── RoleRequest.java
 │                       ├── responsentity
 │                       │   ├── AuthenticationResponse.java
-│                       │   └── ResponsePage.java
+│                       │   ├── ResponsePage.java
+│                       │   └── UserInfoRequest.java
 │                       ├── service
-│                       │   └── imp
-│                       │       ├── AuthenticationServiceImp.java
-│                       │       ├── MailServiceImp.java
-│                       │       ├── RoleServiceImp.java
-│                       │       └── UserServiceImp.java
+│                       │   ├── imp
+│                       │   │   ├── AuthenticationServiceImp.java
+│                       │   │   ├── MailServiceImp.java
+│                       │   │   ├── RoleServiceImp.java
+│                       │   │   └── UserServiceImp.java
+│                       │   └── RoleService.java
 │                       ├── token
 │                       │   ├── Token.java
 │                       │   ├── TokenRepository.java
@@ -110,7 +129,9 @@
     ├── draggable_table_data_detailed.html.json
     ├── mapper
     │   ├── DraggableTableMapper.xml
+    │   ├── RoleMapper.xml
     │   └── UserMapper.xml
     ├── static
+    │   └── upload
     └── templates
 ```
