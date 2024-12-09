@@ -34,8 +34,7 @@ public class SecurityConfiguration {
     private static final String[] WHITE_LIST_URL = {
             "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**", // Swagger 文档相关路径
             "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
-            "/api/v1/users/**",
-            "/api/v1/role/manage/**"
+            "/api/v1/users/**"
     };
 
     // JWT 认证过滤器
@@ -69,6 +68,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/v1/articles/**").hasRole("ADMIN") // 文章管理接口需要 ADMIN 角色
                                 .requestMatchers("/api/v1/pageviews/**").hasRole("ADMIN") // 页面浏览统计接口需要 ADMIN 角色
                                 .requestMatchers("/api/v1/role/manage/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1//user/manage/**").hasAnyRole("ADMIN", "MANAGEMENT")
                                 .requestMatchers("/uploads/**").permitAll() // 静态资源放行
                                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll() // 其他静态资源放行
                                 .anyRequest()
@@ -86,7 +86,7 @@ public class SecurityConfiguration {
 
                 // 6. 配置注销处理逻辑
                 .logout(logout ->
-                        logout.logoutUrl("/api/v1/auth/logout") // 配置注销请求的 URL
+                        logout.logoutUrl("/api/v1/users/logout") // 配置注销请求的 URL
                                 .addLogoutHandler(logoutHandler) // 添加自定义注销处理器
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()) // 成功注销后清除安全上下文
                 );

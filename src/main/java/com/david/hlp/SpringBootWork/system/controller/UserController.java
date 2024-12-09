@@ -12,11 +12,14 @@ import com.david.hlp.SpringBootWork.system.responsentity.ResponsePage;
 import com.david.hlp.SpringBootWork.system.service.imp.AuthenticationServiceImp;
 import com.david.hlp.SpringBootWork.system.service.imp.MailServiceImp;
 import com.david.hlp.SpringBootWork.system.service.imp.UserServiceImp;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 
 /**

@@ -63,7 +63,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             || request.getServletPath().equals("/api/v1/users/login")
             || request.getServletPath().equals("/api/v1/users/register")
             || request.getServletPath().startsWith("/api/v1/users/sendcode/")
-            || request.getServletPath().startsWith("/api/v1/role/manage/")
     ) {
       filterChain.doFilter(request, response); // 放行请求到下一个过滤器
       return;
