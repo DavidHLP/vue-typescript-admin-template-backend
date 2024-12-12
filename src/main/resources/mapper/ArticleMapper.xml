@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.david.hlp.SpringBootWork.blog.mapper.ArticleMapper">
+
+    <resultMap id="ArticleResultMap" type="com.david.hlp.SpringBootWork.blog.entity.ArticleTable">
+        <!-- 主键映射 -->
+        <id column="id" property="id" />
+
+        <!-- 普通字段映射 -->
+        <result column="abstract_content" property="abstractContent" />
+        <result column="author" property="author" />
+        <result column="disable_comment" property="disableComment" />
+        <result column="markdown_content" property="markdownContent" />
+        <result column="version" property="version" />
+        <result column="imageurl" property="imageURL" />
+        <result column="pageviews" property="pageviews" />
+        <result column="title" property="title" />
+        <result column="timestamp" property="timestamp" />
+        <result column="status" property="status" />
+        <result column="unique_identifier" property="uniqueIdentifier" />
+    </resultMap>
+
+
+    <insert id="insertArticle" parameterType="com.david.hlp.SpringBootWork.blog.entity.ArticleTable">
+        INSERT INTO article (
+            abstract_content,
+            markdown_content,
+            author,
+            title,
+            version,
+            unique_identifier,
+            timestamp,
+            status
+        )
+        VALUES (
+                   #{abstractContent},
+                   #{markdownContent},
+                   #{author},
+                   #{title},
+                   #{version},
+                   #{uniqueIdentifier},
+                   #{timestamp},
+                   #{status}
+               );
+    </insert>
+
+    <update id="updateArticle" parameterType="com.david.hlp.SpringBootWork.blog.entity.ArticleTable">
+        UPDATE article
+        SET
+            abstract_content = #{article.abstractContent},
+            markdown_content = #{article.markdownContent},
+            author = #{article.author},
+            title = #{article.title},
+            version = #{article.version},
+            unique_identifier = #{article.uniqueIdentifier},
+            timestamp = #{article.timestamp},
+            status = #{article.status}
+        WHERE id = #{id} and version = #{version};
+    </update>
+
+    <select id="selectWrapperArticleByStatusAndKeyWord" resultMap="ArticleResultMap">
+        SELECT *
+        FROM article
+        <where>
+            <if test="status != null">
+                status = #{status}
+            </if>
+            <if test="keyWord != null and keyWord != ''">
+                title LIKE CONCAT('%', #{keyWord}, '%')
+            </if>
+        </where>
+    </select>
+</mapper>

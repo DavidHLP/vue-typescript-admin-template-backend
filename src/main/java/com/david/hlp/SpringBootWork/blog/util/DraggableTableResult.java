@@ -1,6 +1,5 @@
-package com.david.hlp.SpringBootWork.demo.util;
+package com.david.hlp.SpringBootWork.blog.util;
 
-import com.david.hlp.SpringBootWork.demo.entity.DraggableTable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +16,7 @@ import java.util.List;
 @Builder // 提供 Builder 模式，便于构建对象
 @AllArgsConstructor // 生成包含所有字段的全参构造函数
 @NoArgsConstructor // 生成无参构造函数
-public class DraggableTableResult <T>{
+public class DraggableTableResult<T>{
 
     /**
      * 当前页的文章列表。

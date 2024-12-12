@@ -1,6 +1,6 @@
 package com.david.hlp.SpringBootWork.system.service.imp;
 
-import com.david.hlp.SpringBootWork.demo.util.DraggableTableResult;
+import com.david.hlp.SpringBootWork.blog.util.DraggableTableResult;
 import com.david.hlp.SpringBootWork.system.entity.Permission;
 import com.david.hlp.SpringBootWork.system.entity.Role;
 import com.david.hlp.SpringBootWork.system.entity.RolePermissionInfo;
@@ -40,7 +40,7 @@ public class RoleServiceImp implements RoleService {
         sort = sort.equals("+id") ? "ASC" : "DESC";
         List<Role> roles = roleMapper.selectByRoleAndPermissino(offset,page,limit,sort,roleName,status,permission);
         int total = roleMapper.countFilteredRoles(roleName,status ,permission);
-        return DraggableTableResult.<Role>builder().items(roles).total(total).build();
+        return com.david.hlp.SpringBootWork.blog.util.DraggableTableResult.<Role>builder().items(roles).total(total).build();
     }
 
     @Override

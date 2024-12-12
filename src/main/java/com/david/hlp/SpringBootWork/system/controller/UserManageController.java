@@ -1,7 +1,7 @@
 package com.david.hlp.SpringBootWork.system.controller;
 
-import com.david.hlp.SpringBootWork.demo.entity.ArticleWrapper;
-import com.david.hlp.SpringBootWork.demo.util.DraggableTableResult;
+import com.david.hlp.SpringBootWork.blog.entity.ArticleWrapper;
+import com.david.hlp.SpringBootWork.blog.util.DraggableTableResult;
 import com.david.hlp.SpringBootWork.system.auth.BaseController;
 import com.david.hlp.SpringBootWork.system.entity.Result;
 import com.david.hlp.SpringBootWork.system.entity.UserInfo;

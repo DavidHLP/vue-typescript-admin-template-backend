@@ -1,4 +1,4 @@
-package com.david.hlp.SpringBootWork.demo.entity;
+package com.david.hlp.SpringBootWork.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

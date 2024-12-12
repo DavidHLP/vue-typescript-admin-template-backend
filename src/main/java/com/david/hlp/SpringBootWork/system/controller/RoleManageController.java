@@ -1,14 +1,12 @@
 package com.david.hlp.SpringBootWork.system.controller;
 
-import com.david.hlp.SpringBootWork.demo.entity.ArticleWrapper;
-import com.david.hlp.SpringBootWork.demo.util.DraggableTableResult;
+import com.david.hlp.SpringBootWork.blog.entity.ArticleWrapper;
+import com.david.hlp.SpringBootWork.blog.util.DraggableTableResult;
 import com.david.hlp.SpringBootWork.system.auth.BaseController;
 import com.david.hlp.SpringBootWork.system.entity.Permission;
 import com.david.hlp.SpringBootWork.system.entity.Result;
 import com.david.hlp.SpringBootWork.system.entity.Role;
-import com.david.hlp.SpringBootWork.system.entity.UserInfo;
 import com.david.hlp.SpringBootWork.system.requestentity.RoleRequest;
-import com.david.hlp.SpringBootWork.system.responsentity.UserInfoRequest;
 import com.david.hlp.SpringBootWork.system.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

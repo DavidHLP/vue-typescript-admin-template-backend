@@ -1,6 +1,6 @@
 package com.david.hlp.SpringBootWork.system.service;
 
-import com.david.hlp.SpringBootWork.demo.util.DraggableTableResult;
+import com.david.hlp.SpringBootWork.blog.util.DraggableTableResult;
 import com.david.hlp.SpringBootWork.system.entity.Permission;
 import com.david.hlp.SpringBootWork.system.entity.Role;
 import com.david.hlp.SpringBootWork.system.requestentity.RoleRequest;

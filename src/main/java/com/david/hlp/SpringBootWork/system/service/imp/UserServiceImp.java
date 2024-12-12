@@ -1,8 +1,7 @@
 package com.david.hlp.SpringBootWork.system.service.imp;
 
-import com.david.hlp.SpringBootWork.demo.entity.ArticleWrapper;
-import com.david.hlp.SpringBootWork.demo.entity.DraggableTable;
-import com.david.hlp.SpringBootWork.demo.util.DraggableTableResult;
+import com.david.hlp.SpringBootWork.blog.entity.ArticleWrapper;
+import com.david.hlp.SpringBootWork.blog.util.DraggableTableResult;
 import com.david.hlp.SpringBootWork.system.entity.*;
 import com.david.hlp.SpringBootWork.system.mapper.RoleMapper;
 import com.david.hlp.SpringBootWork.system.mapper.UserMapper;
@@ -176,7 +175,7 @@ public class UserServiceImp {
         int total = userMapper.countFilteredUsers(name, email,role , userStatus);
 
         // 构建结果对象
-        return DraggableTableResult.<UserInfo>builder()
+        return com.david.hlp.SpringBootWork.blog.util.DraggableTableResult.<UserInfo>builder()
                 .items(users)
                 .total(total)
                 .build();
